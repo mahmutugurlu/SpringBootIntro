@@ -1,6 +1,8 @@
 package com.tpe.controller;
 
 import com.tpe.domain.Student;
+import com.tpe.dto.StudentDTO;
+import com.tpe.dto.UpdateStudentDTO;
 import com.tpe.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -95,6 +97,19 @@ public class StudentController {
     //request : http://localhost:8080/students/1 + GET
     //response:student + 200
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> getStudentPath(@RequestParam("id") Long identity){
+
+        Student student=service.findStudentById(identity);
+
+
+        //return new ResponseEntity<>(student,HttpStatus.OK);
+        return ResponseEntity.ok(student);//200
+
+    }
+
+
+
 
     //8-path param ile idsi verilen öğrenciyi silme
     //request : http://localhost:8080/students/1 + DELETE
@@ -143,6 +158,66 @@ public class StudentController {
     }
 
     //postman ile 10 tane ögrenci ekleyelim
+
+    //12-idsi verilen öğrencinin name,lastname ve emailini değiştirme(güncelleme)
+    //request : http://localhost:8080/students/1 + PUT(yerine koyma)/PATCH(kısmi) + BODY(JSON)
+    //response: yeni bilgilerle güncelleme, başarılı mesaj + 201
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateStudent(@PathVariable("id") Long id,
+                                                @Valid @RequestBody UpdateStudentDTO studentDTO){
+
+        service.updateStudentById(id,studentDTO);
+
+        return new ResponseEntity<>("Student is updated successfully..",HttpStatus.CREATED);
+
+    }
+
+
+
+    //NOT:response : updated student + başarılı mesajı + 201 birlikte göndermek istersek
+    //1.yol: ResponseEntity: HashMap.put(student,mesaj) + 201
+    //2.yol: CustomResponse:body,message,status
+
+
+    //14 grade ile öğrencileri filtreleyelim
+
+    @GetMapping("/grade/{grade}")
+    public ResponseEntity<List<Student>> getStudentsByGrade(@PathVariable("grade") Integer grade){
+
+        List<Student> students=service.findStudentsByGrade(grade);
+
+        return ResponseEntity.ok(students);
+    }
+
+
+    //Practice1:isim veya soyisme göre filtreleme
+    //request:http://localhost:8080/students/search?word=Deniz + GET
+
+    //Practice2:grade x ile y arasında olan öğrencileri filtreleyelim
+    //request : http://localhost:8080/students/point?min=15&max=50 + GET
+    //response:grade:15 ile 50 olan öğrencileri listeleyelim
+
+    //1-repository:metod isimlerini türeterek
+    //2-JPQL/SQL ile custom sorgu yazarak
+
+
+
+
+    //16-id'si verilen öğrencinin name,lastname ve grade getirme
+    //request:http://localhost:8080/students/info/2 + GET
+    //response:idsi verilen öğrencinin sadece 3 datasını DTO olarak gösterme + 200
+
+
+    @GetMapping("/info/{id}")
+    public ResponseEntity<StudentDTO> getStudentInfo(@PathVariable("id") Long id){
+
+        StudentDTO studentDTO=service.getStudentInfoById(id);
+
+        return ResponseEntity.ok(studentDTO);
+
+    }
+
 
 
 
