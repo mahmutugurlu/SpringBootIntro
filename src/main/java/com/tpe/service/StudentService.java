@@ -139,11 +139,14 @@ public class StudentService {
     }
 
 
-    //17-b
-
-
-
-
+    //17-b:JPQL avantajı
+    public StudentDTO getStudentDto(Long id){
+        StudentDTO studentDTO=repository.findStudentDTOById(id).
+                orElseThrow(
+                        ()->new ResourceNotFoundException("Student is not found by id: "+id)
+                );
+        return studentDTO;
+    }
 
 
 

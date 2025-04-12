@@ -1,12 +1,14 @@
 package com.tpe.repository;
 
 import com.tpe.domain.Student;
+import com.tpe.dto.StudentDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository//
 public interface StudentRepository extends JpaRepository<Student, Long> {
@@ -35,6 +37,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     //SQL
     @Query(value = "SELECT * FROM student WHERE grade=:pGrade",nativeQuery = true)
     List<Student> filterAllByGradeSql(@Param("pGrade") Integer grade);
+
+    // 18- JPQL ile tablodan gelen entity objesini DTO nun constructorini kullanarak DTO objesine dönüstürebiliriz.
+    //17. adimda yapilan islemin biraz daha pratik hali
+
+    @Query("SELECT new com.tpe.dto.StudentDTO(s) FROM Student s WHERE s.id=:pId")
+    Optional<StudentDTO> findStudentDTOById(@Param("pId") Long id);
+
 
 
 

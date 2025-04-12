@@ -3,6 +3,8 @@ package com.tpe.controller;
 import com.tpe.domain.Student;
 import com.tpe.dto.StudentDTO;
 import com.tpe.dto.UpdateStudentDTO;
+import com.tpe.exceptions.ConflictException;
+import com.tpe.exceptions.ResourceNotFoundException;
 import com.tpe.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,9 +14,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 @RestController //requestler bu classtaki metodlarla eşleştirilecek ve responselar hazırlanacak
 //@ResponseBody :metodun dönüş değerini JSON formatında cevap olarak hazırlar
@@ -24,6 +32,8 @@ import java.util.List;
 @RequiredArgsConstructor
 
 public class StudentController {
+
+    Logger logger= LoggerFactory.getLogger(StudentController.class);
 
     private final StudentService service;
 
@@ -69,11 +79,18 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<String> createStudent(@Valid @RequestBody Student student){
-        service.saveStudent(student);
+        try {
 
-        return new ResponseEntity<>("Student is created successfully..",HttpStatus.CREATED);//201
+            service.saveStudent(student);
+            logger.info("yeni öğrenci eklendi, id : "+student.getId());
+            return new ResponseEntity<>("Student is created successfully..",HttpStatus.CREATED);//201
+
+        }catch (ConflictException e){
+            logger.warn(e.getMessage());
+            return new ResponseEntity<>("Student creation is failed!!!",HttpStatus.BAD_REQUEST);//400
+        }
+
     }
-
     //RequestBody : istekte bulunan body i alır,Studenttaki eşleşen fieldlere yerleştirir.
     //@Valid : create edilirken kuralları kontrol eder.
 
@@ -207,20 +224,51 @@ public class StudentController {
     //16-id'si verilen öğrencinin name,lastname ve grade getirme
     //request:http://localhost:8080/students/info/2 + GET
     //response:idsi verilen öğrencinin sadece 3 datasını DTO olarak gösterme + 200
-
-
     @GetMapping("/info/{id}")
     public ResponseEntity<StudentDTO> getStudentInfo(@PathVariable("id") Long id){
 
-        StudentDTO studentDTO=service.getStudentInfoById(id);
+        // StudentDTO studentDTO=service.getStudentInfoById(id);
+        StudentDTO studentDTO=service.getStudentDto(id);
 
         return ResponseEntity.ok(studentDTO);
 
     }
 
 
+        /*
+
+    Loglama, bir yazılım veya sistemin çalışırken yaptığı önemli olayları,
+     işlemleri ve hataları kaydetmesi anlamına gelir. Loglar,
+
+     bilgisayar programlarının bir çeşit "günlüğü" veya "karne defteri" gibi düşünülebilir.
+     Sistem, yaptığı işleri ve karşılaştığı problemleri
+     buraya yazar ve bu bilgiler, geliştiriciler veya sistem yöneticileri için çok değerlidir.
+
+         */
 
 
+    //19-loglama örneği
+    //request: http://localhost:8080/students/welcome + GET
+    @GetMapping("/welcome")
+    public String getMessage(HttpServletRequest request){
+        logger.info("Welcome isteği metoda eşleştirildi.");
+        logger.warn("welcome isteğinin metodu : "+request.getMethod());
+        logger.warn("welcome isteğinin pathi : "+request.getServletPath());
+
+        return "Welcome Spring Boot:)";
+
+    }
+
+
+    //20-exception handling
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleException(ResourceNotFoundException e){
+
+        Map<String,String> response=new HashMap<>();
+        response.put("error  ",e.getMessage());//body
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);//404
+
+    }
 
 
 
@@ -238,6 +286,31 @@ public class StudentController {
 
      */
 
+          /*
+    Spring Boot Actuator, bir uygulamanın sağlık durumunu ve çalışma metriklerini izlemek
+    için kullanılan bir Spring Boot kütüphanesidir. Actuator, bir uygulamanın
+    arka planda nasıl çalıştığını görmenizi sağlar ve uygulamanın izlenebilirliğini artırır.
+    Uygulama Sağlık Durumu:
+
+    Uygulamanın çalışır durumda olup olmadığını kontrol eder.
+    Örneğin: "Veritabanına bağlanabiliyor mu? Sunucu çalışıyor mu?"
+    Metrik Takibi:
+
+    Uygulamanın performansı hakkında bilgiler sağlar.
+    Örneğin: "Kaç kullanıcı sisteme bağlandı? Bellek kullanımı ne durumda?"
+    Günlük İşleyişin İzlenmesi:
+
+    Loglama, yapılandırmalar, güvenlik bilgileri gibi iç detayları görmenizi sağlar.
+    Sorun Giderme:
+
+    Hata durumunda, sistemin hangi noktada sorun yaşadığını anlamanıza yardımcı olur
+    /actuator/health    Uygulamanın sağlık durumunu gösterir.
+    /actuator/metrics   Uygulamanın performansıyla ilgili metrikleri listeler.
+    /actuator/env       Uygulamanın çevre değişkenlerini listeler.
+    /actuator/loggers   Log seviyelerini ve log yapılandırmalarını kontrol eder.
+    /actuator/info      Uygulama hakkında bilgi verir (ör. sürüm bilgisi).
+
+    */
 
 
 
