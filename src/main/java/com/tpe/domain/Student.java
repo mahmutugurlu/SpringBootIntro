@@ -5,6 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter//tüm fieldlar için getter metodunun tanımlanmasını sağlar
@@ -43,8 +45,15 @@ public class Student {
 
     @PrePersist
     public void prePersist(){
+
         this.createDate=LocalDateTime.now();
     }
+
+    @OneToMany(mappedBy = "student") //book clasindaki student fieldena göre deger alacak, mappedBy sayesinde tablo olusturmayacak
+    private List<Book> bookList = new ArrayList<>();
+
+
+
 
     //getter-setter
 

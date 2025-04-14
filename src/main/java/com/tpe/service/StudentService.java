@@ -148,9 +148,11 @@ public class StudentService {
         return studentDTO;
     }
 
+    //Practice 1-b
+    public List<Student> getStudentsByNameOrLastname(String word) {
 
+        //select * from student where name='Deniz' or lastname='Deniz'
+        return repository.findByNameOrLastname(word,word);
 
-
-
-
+    }
 }

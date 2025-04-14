@@ -43,7 +43,7 @@ public class StudentController {
     @GetMapping("/greet")
     //@ResponseBody
     public String greet(){
-        return "Hello Spring BOOT:)";
+        return "Hello, Spring BOOT is perfect :)";
     }
 
     //1-tüm öğrencileri listeleyelim : READ
@@ -211,12 +211,27 @@ public class StudentController {
     //Practice1:isim veya soyisme göre filtreleme
     //request:http://localhost:8080/students/search?word=Deniz + GET
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Student>> getStudentsByNameOrLastname(@RequestParam("word") String word){
+
+        List<Student> students=service.getStudentsByNameOrLastname(word);
+
+        return ResponseEntity.ok(students);//200
+
+    }
+
+
+
+
     //Practice2:grade x ile y arasında olan öğrencileri filtreleyelim
     //request : http://localhost:8080/students/point?min=15&max=50 + GET
     //response:grade:15 ile 50 olan öğrencileri listeleyelim
 
     //1-repository:metod isimlerini türeterek
     //2-JPQL/SQL ile custom sorgu yazarak
+
+    //Meraklısına ÖDEVVV:)name içinde ".." hecesi geçen öğrencileri filtreleme
+    //request:http://localhost:8080/students/filter?word=al + GET ex:halil, lale
 
 
 
@@ -265,7 +280,7 @@ public class StudentController {
     public ResponseEntity<Map<String,String>> handleException(ResourceNotFoundException e){
 
         Map<String,String> response=new HashMap<>();
-        response.put("error  ",e.getMessage());//body
+        response.put("error",e.getMessage());//body
         return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);//404
 
     }
