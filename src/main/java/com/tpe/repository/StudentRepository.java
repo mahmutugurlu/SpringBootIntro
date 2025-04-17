@@ -18,7 +18,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     //yani book adli classi implement etmek icin Student data türünü book olarak degistiririz.
 
     //
-    boolean existsByEmail(String email); //türetilmis metodlar Spring tarafindan otomatik implente edilir,
+    boolean existsByEmail(String email); //JpaRepository interfacende olan metodlari field adlarina göre türetebiliriz.
+                            // türetilmis metodlar Spring tarafindan otomatik implente edilir,
                                 //burada existsById metodundan existsByEmail metodunu türettik
 
     //15-a
@@ -31,6 +32,22 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> filterAllByGrade(@Param("pGrade") Integer grade);//spring verilen querye göre metodu implemente eder
     //@Param methodun parametresinde verilen degeri pGrade icerisine alir
     // ve bu degiskeni sorgu icerisinde kullanabiliriz
+
+    /*
+     @Param, Spring MVC değil, Spring Data JPA için kullanılır.
+Yani genellikle repository interface’lerinde, custom JPQL ya da SQL sorgularında kullanılır.
+
+🔹 @Param Nedir?
+@Param, Spring Data JPA'da bir query'de kullanılan değişkenleri method parametrelerine bağlamak için kullanılır.
+
+
+    Özellik	               Açıklama
+    Nerede?   	         Spring Data Repository interface'inde
+    Ne işe yarar?	    @Query içindeki parametreleri bağlar
+    Ne zaman?	        Custom JPQL/SQL sorgular yazarken
+
+
+     */
 
 
     //15-c
@@ -53,8 +70,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> getByNameOrLastname(@Param("pName") String word,@Param("pLastname") String word1);
 
 
-
-
+    @Query("Select s From Student s Where grade Between 90 and 100 ")
+    List<Student> findByGradeBetweenQuery(Long min, Long max);
 }
 
 

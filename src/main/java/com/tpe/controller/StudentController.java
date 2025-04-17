@@ -28,8 +28,11 @@ import java.util.Map;
 //@ResponseBody :metodun dönüş değerini JSON formatında cevap olarak hazırlar
 //@RequestBody  :requestin içindeki(bodysinde) JSON formatında olan datayı uygulama içindeki objeye dönüştürür
 // obje <-> JSON dönüsümü : Jackson kütüphanesi
-@RequestMapping("/students")
-@RequiredArgsConstructor
+@RequestMapping("/students") //@RequestMapping, gelen HTTP isteklerini (GET, POST, PUT, DELETE vs.) bir metoda veya controller sınıfına yönlendirmek için kullanılır.
+                            //Hem sınıf düzeyinde hem de metot düzeyinde tanımlanabilir.
+
+@RequiredArgsConstructor //@RequiredArgsConstructor, sınıf içinde final olarak tanımlanmış tüm alanlar (veya @NonNull anotasyonu ile işaretlenmiş alanlar) için bir constructor (yapıcı metot) otomatik olarak oluşturur.
+                //Yani bu anotasyon sayesinde, gerekli bağımlılıkları enjekte etmek için elle constructor yazmaya gerek kalmaz.
 
 public class StudentController {
 
@@ -40,9 +43,10 @@ public class StudentController {
 
     //SpringBOOT'u selamlama:)
     //http://localhost:8080/students/greet + GET
-    @GetMapping("/greet")
+    @GetMapping("/greet") //Bu anotasyonla işaretlenmiş metodlar, sadece GET tipindeki HTTP isteklerini işler.
     //@ResponseBody
     public String greet(){
+
         return "Hello, Spring BOOT is perfect :)";
     }
 
@@ -77,7 +81,7 @@ public class StudentController {
 
     //Response : öğrenci tabloya eklenir, başarılı mesajı + 201(Created)
 
-    @PostMapping
+    @PostMapping //@PostMapping, Spring Framework’te HTTP POST isteklerini bir metoda yönlendirmek için kullanılan bir kısa yol (shortcut) anotasyondur.
     public ResponseEntity<String> createStudent(@Valid @RequestBody Student student){
         try {
 
@@ -108,6 +112,19 @@ public class StudentController {
         //return new ResponseEntity<>(student,HttpStatus.OK);
         return ResponseEntity.ok(student);//200
 
+        /*
+
+        Spring Boot'ta @RequestParam, bir HTTP isteği içindeki query parametrelerini (URL’deki ? sonrası kısımlar) Java metot parametrelerine bağlamak için kullanılır.
+        Kısaca: URL'deki parametreleri metoda kolayca almanı sağlar.
+
+                Ne zaman @RequestParam kullanılır?
+        ✅ URL query parametreleriyle çalışırken
+        ✅ Arama, filtreleme, sıralama gibi işlemlerde
+        ✅ Formdan gelen verilerde (GET ile gönderiliyorsa)
+
+
+         */
+
     }
 
     //ÖDEV(Alternatif)-path param ile idsi verilen öğrenciyi getirme
@@ -115,7 +132,7 @@ public class StudentController {
     //response:student + 200
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentPath(@RequestParam("id") Long identity){
+    public ResponseEntity<Student> getStudentPath(@PathVariable("id") Long identity){
 
         Student student=service.findStudentById(identity);
 
@@ -123,7 +140,33 @@ public class StudentController {
         //return new ResponseEntity<>(student,HttpStatus.OK);
         return ResponseEntity.ok(student);//200
 
+        /*
+
+        @PathVariable, bir HTTP isteği URL’sinin path (yol) kısmındaki verileri Java metoduna aktarmak için kullanılır.
+        Yani URL’nin içine gömülü veriyi almanı sağlar.
+
+                 Anotasyonun Özellikleri
+
+        Özellik	        Açıklama
+        @PathVariable	URL içindeki {}  süslü parantezli path verilerini çeker.
+        value	        URL’deki değişken ismi. Genelde yazmaya bile gerek yoktur.
+        required	     Varsayılan true – yoksa hata verir.
+
+
+        🔸 @PathVariable vs @RequestParam
+
+Özellik	                @PathVariable	                                   @RequestParam
+Nereden veri alır?	    URL yolundan (/.../{id})	                  URL query'sinden (?id=...)
+Kullanım amacı	        Kaynak kimliği, yönlendirme	                  Filtreleme, sıralama, arama
+URL Örneği	            /students/5	                                  /students?id=5
+
+
+
+         */
+
     }
+
+
 
 
 
@@ -188,7 +231,24 @@ public class StudentController {
 
         return new ResponseEntity<>("Student is updated successfully..",HttpStatus.CREATED);
 
+
     }
+
+    /*
+
+        @PatchMapping, Spring Boot’ta HTTP PATCH isteklerini işlemek için kullanılır.
+
+    PATCH, bir kaynağın tamamını değil, sadece belirli alanlarını güncellemek için kullanılır.
+
+    🔧 Ne zaman kullanılır?
+    Bir nesnenin sadece bazı alanlarını değiştirmek istediğinde (örneğin: sadece ad, sadece e-posta).
+
+    PUT gibi tüm nesneyi değil, kısmi değişiklik yapmak istediğinde
+
+
+     */
+
+
 
 
 
@@ -227,6 +287,14 @@ public class StudentController {
     //request : http://localhost:8080/students/point?min=15&max=50 + GET
     //response:grade:15 ile 50 olan öğrencileri listeleyelim
 
+    @GetMapping("/point")
+    public ResponseEntity<List<Student>>getStudentsByPoint(@RequestParam("min") Long min, @RequestParam("max") Long max){
+
+        List<Student> student2 = service.getStudentsByPoint(min, max);
+        return ResponseEntity.ok(student2);
+    }
+
+
     //1-repository:metod isimlerini türeterek
     //2-JPQL/SQL ile custom sorgu yazarak
 
@@ -262,6 +330,7 @@ public class StudentController {
          */
 
 
+
     //19-loglama örneği
     //request: http://localhost:8080/students/welcome + GET
     @GetMapping("/welcome")
@@ -273,7 +342,6 @@ public class StudentController {
         return "Welcome Spring Boot:)";
 
     }
-
 
     //20-exception handling
     @ExceptionHandler(ResourceNotFoundException.class)

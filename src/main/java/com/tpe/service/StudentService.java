@@ -155,4 +155,11 @@ public class StudentService {
         return repository.findByNameOrLastname(word,word);
 
     }
+
+    public List<Student> getStudentsByPoint(Long min, Long max) {
+
+        List<Student> studentGrade = repository.findByGradeBetweenQuery(min,max);
+        return studentGrade;
+
+    }
 }
