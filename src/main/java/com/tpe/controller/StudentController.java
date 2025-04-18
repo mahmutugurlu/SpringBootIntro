@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@RestController //requestler bu classtaki metodlarla eşleştirilecek ve responselar hazırlanacak
+@RestController //requestler bu classtaki metodlarla eşleştirilecek ve responselar hazırlanacak--
 //@ResponseBody :metodun dönüş değerini JSON formatında cevap olarak hazırlar
 //@RequestBody  :requestin içindeki(bodysinde) JSON formatında olan datayı uygulama içindeki objeye dönüştürür
 // obje <-> JSON dönüsümü : Jackson kütüphanesi
@@ -122,6 +122,7 @@ public class StudentController {
         ✅ Arama, filtreleme, sıralama gibi işlemlerde
         ✅ Formdan gelen verilerde (GET ile gönderiliyorsa)
 
+ .
 
          */
 
