@@ -22,6 +22,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
         format_sql: true
 
+  security:
+    user:
+      name: admin
+      password: password
+
 logging:   #logging.file.name:log/studentapp.log
   file:
     name: log/studentapp.log
@@ -48,3 +53,4 @@ info:
     name: 'Student Management System Demo App '
     version: '@project.version@'
     description: 'Demo App For Spring Boot'
+
