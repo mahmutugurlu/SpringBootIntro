@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,25 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
+/*
+@RestController --> sınıfı Rest API olarak tanımlar.
+        ---> Controller + ResponseBody bileşimidir
+        ---> Methodlardan dönen verileri otomatik olarak JSON formatına dönüştürür --> Jackson kütüphanesi ile
+        ---> HTTP isteklerini karşılayan sınıflarda kullanıyoruz.
+
+        4-@RequestMapping --> Methoda ya da Classa gelen HTTP isteklerini eşler
+        ---> Method seviyesinde ya da class seviyesinde kullanılır
+     ---> End point te @RequestMappig("/students") dediğimizde ,url de gidilecek özelleşmiş adresi belirtir.(sınıf veya method için)
+        *** Alternnatifler vardır***
+        ---> @GetMapping
+     ---> @PutMapping/@PatchMapping
+     ---> @PostMapping
+     ---> @DeleteMapping
+
+
+ */
 
 
 @RestController //requestler bu classtaki metodlarla eşleştirilecek ve responselar hazırlanacak--
@@ -43,6 +63,8 @@ public class StudentController {
 
     //SpringBOOT'u selamlama:)
     //http://localhost:8080/students/greet + GET
+
+    @PreAuthorize("hasRole('STUDENT')" )  //bu işlem için ROLE_STUDENT kullanıcısının yetkilendirilmesini sağlar
     @GetMapping("/greet") //Bu anotasyonla işaretlenmiş metodlar, sadece GET tipindeki HTTP isteklerini işler.
     //@ResponseBody
     public String greet(){
@@ -54,6 +76,7 @@ public class StudentController {
     //Request : http://localhost:8080/students + GET
     //Response : tüm ögrencilerin listesi + 200 : ok (HttpStatus Code)
 
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @GetMapping
     public ResponseEntity<List<Student>> getAllStudents(){
         //taboladan tüm kayıtları getirelim
