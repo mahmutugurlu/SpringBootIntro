@@ -1,0 +1,227 @@
+/*
+@RestController --> sınıfı Rest API olarak tanımlar.
+        ---> Controller + ResponseBody bileşimidir
+        ---> Methodlardan dönen verileri otomatik olarak JSON formatına dönüştürür --> Jackson kütüphanesi ile
+        ---> HTTP isteklerini karşılayan sınıflarda kullanıyoruz.
+
+        4-@RequestMapping --> Methoda ya da Classa gelen HTTP isteklerini eşler
+        ---> Method seviyesinde ya da class seviyesinde kullanılır
+     ---> End point te @RequestMappig("/students") dediğimizde ,url de gidilecek özelleşmiş adresi belirtir.(sınıf veya method için)
+        *** Alternnatifler vardır***
+        ---> @GetMapping
+     ---> @PutMapping/@PatchMapping
+     ---> @PostMapping
+     ---> @DeleteMapping
+
+
+ */
+
+ ---------------
+
+ @ResponseBody anotasyonu, Spring Boot'ta bir metodun dönüş değerinin doğrudan HTTP yanıt gövdesine yazılmasını
+ sağlar. Yani dönüş değeri, bir view (HTML şablon) değil, doğrudan JSON, XML veya düz metin gibi bir veri olarak
+ istemciye gönderilir.
+
+ Ne İşe Yarar?
+ Varsayılan olarak, Spring bir controller metodunun dönüşünü bir view (örneğin bir HTML sayfası) olarak
+ yorumlamaya çalışır. Ancak @ResponseBody kullanıldığında bu davranış değişir ve dönüş değeri serileştirilerek
+ doğrudan HTTP yanıtı olarak gönderilir.
+
+ Ne Zaman Gerekir?
+ Eğer @Controller kullanıyorsan ve bir metottan JSON, XML veya düz veri dönmek istiyorsan @ResponseBody kullanırsın.
+
+ Eğer @RestController kullanıyorsan gerekmez, çünkü zaten varsayılan olarak aktiftir.
+
+------------------------------------------------------
+
+    @RequestBody, Spring Boot'ta gelen bir HTTP isteğinin gövdesindeki veriyi (örneğin JSON) alıp, bunu
+    otomatik olarak bir Java nesnesine dönüştürmek (deserialize etmek) için kullanılır.
+
+    Ne İşe Yarar?
+    Genellikle POST, PUT ve PATCH istekleriyle birlikte kullanılır.
+
+    HTTP isteği gövdesindeki JSON (veya XML) veriyi, belirtilen Java sınıfına dönüştürür.
+
+    Spring, bu işlemi HttpMessageConverter aracılığıyla otomatik yapar (genelde Jackson kütüphanesi ile JSON için).
+
+    @RequestBody kullandığında, parametre sınıfının getter ve setter'ları olmalıdır, yoksa dönüşüm başarısız olur.
+
+    Dikkat Edilecek Noktalar:
+    Content-Type başlığı application/json olmalı.
+
+    @RequestBody parametresi boş geçilirse (null), varsayılan olarak 400 Bad Request hatası döner.
+
+    Anotasyon	Ne işe yarar?
+    @RequestBody	İstek gövdesindeki JSON'u Java nesnesine çevirir
+    @ResponseBody	Java nesnesini JSON (veya diğer) formata çevirip yanıt olarak döner
+
+    ----------------------------
+
+
+@RequestMapping("/students") //@RequestMapping, gelen HTTP isteklerini (GET, POST, PUT, DELETE vs.) bir metoda veya controller sınıfına yönlendirmek için kullanılır.
+                            //Hem sınıf düzeyinde hem de metot düzeyinde tanımlanabilir.
+
+-----------------------
+@GetMapping("/greet") //Bu anotasyonla işaretlenmiş metodlar, sadece GET tipindeki HTTP isteklerini işler.
+Yani, bir istemci (örneğin bir tarayıcı veya frontend uygulaması) bir URL'ye GET isteği gönderdiğinde, bu anotasyonla işaretlenmiş metot çalıştırılır.
+
+--------------------------------------
+
+  @PostMapping  anotasyonu, bir HTTP POST isteğini belirli bir metoda yönlendirmek için kullanılır.
+Genellikle sunucuya veri göndermek veya yeni bir kaynak oluşturmak için kullanılır.
+
+@RequestParam, @PathVariable, @ModelAttribute gibi diğer anotasyonlarla da kullanılabilir
+ama genellikle @RequestBody ile birlikte tercih edilir.
+
+----------------------------------------
+
+@DeleteMapping anotasyonu, bir HTTP DELETE isteğini belirli bir metoda eşlemek için kullanılır. Bu tür istekler
+genellikle bir kaynağı silmek amacıyla yapılır — örneğin veritabanındaki bir kaydı silmek gibi.
+
+----------------------------------
+
+ @PatchMapping, Spring Boot’ta HTTP PATCH isteklerini işlemek için kullanılır.
+
+    PATCH, bir kaynağın tamamını değil, sadece belirli alanlarını güncellemek için kullanılır.
+
+    🔧 Ne zaman kullanılır?
+    Bir nesnenin sadece bazı alanlarını değiştirmek istediğinde (örneğin: sadece ad, sadece e-posta).
+
+    PUT gibi tüm nesneyi değil, kısmi değişiklik yapmak istediğinde
+
+    ----------------------------
+
+    @PutMapping anotasyonu, bir HTTP PUT isteğini belirli bir metoda yönlendirmek için kullanılır.
+    Bu istek genellikle bir var olan kaynağın tamamını güncellemek için kullanılır.
+
+    PUT ve PATCH Arasındaki Fark:
+    PUT: Kaynağın tamamını günceller (var olan tüm alanları yeni veriyle değiştirir).
+
+    PATCH: Kaynağın bir kısmını günceller (sadece gelen alanları değiştirir).
+
+    -------------------------------
+
+     @RequestParam
+
+            Spring Boot'ta @RequestParam, bir HTTP isteği içindeki query parametrelerini (URL’deki ? sonrası kısımlar) Java metot parametrelerine bağlamak için kullanılır.
+            Kısaca: URL'deki parametreleri metoda kolayca almanı sağlar.
+
+                    Ne zaman @RequestParam kullanılır?
+            ✅ URL query parametreleriyle çalışırken
+            ✅ Arama, filtreleme, sıralama gibi işlemlerde
+            ✅ Formdan gelen verilerde (GET ile gönderiliyorsa)
+
+     .
+
+             */
+
+
+    ----------------------------------
+
+    @PathVariable, bir HTTP isteği URL’sinin path (yol) kısmındaki verileri Java metoduna aktarmak için kullanılır.
+            Yani URL’nin içine gömülü veriyi almanı sağlar.
+
+                     Anotasyonun Özellikleri
+
+            Özellik	        Açıklama
+            @PathVariable	URL içindeki {}  süslü parantezli path verilerini çeker.
+            value	        URL’deki değişken ismi. Genelde yazmaya bile gerek yoktur.
+            required	     Varsayılan true – yoksa hata verir.
+
+
+            🔸 @PathVariable vs @RequestParam
+
+    Özellik	                @PathVariable	                                   @RequestParam
+    Nereden veri alır?	    URL yolundan (/.../{id})	                  URL query'sinden (?id=...)
+    Kullanım amacı	        Kaynak kimliği, yönlendirme	                  Filtreleme, sıralama, arama
+    URL Örneği	            /students/5	                                  /students?id=5
+
+---------------------------------
+
+
+    @CrossOrigin anotasyonu, CORS (Cross-Origin Resource Sharing) politikası ile ilgili ayarları kontrol eder.
+    Başka bir deyişle, farklı bir domain’den (orijin) gelen web isteklerine erişim izni vermek için kullanılır.
+
+    Neden Gerekli?
+    Modern tarayıcılar güvenlik nedeniyle, bir frontend uygulamasının farklı bir domain veya port üzerinden gelen
+    API isteklerini engeller. Buna CORS hatası denir.
+
+    Örneğin:
+
+    Frontend: http://localhost:3000 (React)
+
+    Backend: http://localhost:8080 (Spring Boot)
+
+    Bu durumda frontend, backend'e doğrudan istek atamazsa CORS policy hatası alır.
+
+    Temel Kullanımı:
+    java
+    Copy
+    Edit
+    @RestController
+    @CrossOrigin(origins = "http://localhost:3000")
+    public class UserController {
+
+        @GetMapping("/users")
+        public List<User> getUsers() {
+            return userService.getAll();
+        }
+    }
+    Bu örnekte:
+
+    http://localhost:3000 adresinden gelen istekler kabul edilir.
+
+    Tüm metotlar için geçerlidir (çünkü sınıf seviyesinde tanımlanmış).
+
+    Metot Seviyesinde Kullanım:
+
+    @GetMapping("/products")
+    @CrossOrigin(origins = "https://example.com")
+    public List<Product> getProducts() {
+        return productService.getAll();
+    }
+    Yalnızca bu metoda özel izin verir.
+
+    Gelişmiş Kullanım:
+
+    @CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.POST},
+        allowedHeaders = "*"
+    )
+    methods: Hangi HTTP metotlarına izin verileceğini belirtir.
+
+    allowedHeaders: İzin verilen header bilgilerini belirtir (* = hepsi).
+
+    Tüm Uygulamaya CORS Ayarı (Global):
+
+
+    @Configuration
+    public class CorsConfig {
+
+        @Bean
+        public WebMvcConfigurer corsConfigurer() {
+            return new WebMvcConfigurer() {
+                @Override
+                public void addCorsMappings(CorsRegistry registry) {
+                    registry.addMapping("/**")
+                            .allowedOrigins("http://localhost:3000")
+                            .allowedMethods("*");
+                }
+            };
+        }
+    }
+    Bu, tüm controller'lar için geçerli olur.
+
+    Özet:
+
+    Kullanım	Açıklama
+    @CrossOrigin	Belirli endpoint ya da controller’a dış isteklere izin verir
+    Global Config	Tüm uygulama için genel CORS politikası tanımlar
+
+
+
+
+
+
+
